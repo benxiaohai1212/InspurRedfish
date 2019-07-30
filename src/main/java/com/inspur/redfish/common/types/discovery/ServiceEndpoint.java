@@ -23,20 +23,22 @@ import java.util.Objects;
 import java.util.UUID;
 
 import com.inspur.redfish.common.types.ServiceType;
+import com.inspur.redfish.detection.RedfishServiceAuthInfo;
 
 /**
  * Represents REST API entry point of external service
  */
 public final class ServiceEndpoint {
+	private RedfishServiceAuthInfo authInfo;
+    private ServiceType serviceType;
+    private UUID serviceUuid;
+    private URI endpointUri;
 
-    private final ServiceType serviceType;
-    private final UUID serviceUuid;
-    private final URI endpointUri;
-
-    public ServiceEndpoint(ServiceType serviceType, UUID serviceUuid, URI endpointUri) {
+    public ServiceEndpoint(ServiceType serviceType, UUID serviceUuid, URI endpointUri, RedfishServiceAuthInfo authInfo) {
         this.serviceType = serviceType;
         this.serviceUuid = serviceUuid;
         this.endpointUri = endpointUri;
+        this.authInfo = authInfo;
     }
 
     public URI getEndpointUri() {
@@ -52,7 +54,27 @@ public final class ServiceEndpoint {
     }
 
 
-    @Override
+    public RedfishServiceAuthInfo getAuthInfo() {
+		return authInfo;
+	}
+
+	public void setAuthInfo(RedfishServiceAuthInfo authInfo) {
+		this.authInfo = authInfo;
+	}
+
+	public void setServiceType(ServiceType serviceType) {
+		this.serviceType = serviceType;
+	}
+
+	public void setServiceUuid(UUID serviceUuid) {
+		this.serviceUuid = serviceUuid;
+	}
+
+	public void setEndpointUri(URI endpointUri) {
+		this.endpointUri = endpointUri;
+	}
+
+	@Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;

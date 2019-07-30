@@ -70,7 +70,7 @@ class SerialExecutorImpl implements SerialExecutor {
             syncLocker.unlockIfHeldByCurrentThread();
         }
     }
-    //异步非阻塞执行，直接添加到队列中
+    //对于每个资源,同一时间只能执行一个任务,后续添加的任务在队列里.        
     /*
      * 属于异步执行的任务有：DeepDiscoveryTriggeringTask，DiscoveryRunner（唯一可以cancel的任务）
      * OnServiceDetectRunner，ExternalServiceAvailabilityCheckerTask

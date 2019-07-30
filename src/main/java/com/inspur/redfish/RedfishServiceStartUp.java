@@ -27,9 +27,9 @@ public class RedfishServiceStartUp implements CommandLineRunner{
 	@Override
 	public void run(String... args) throws Exception {
 		logger.info("starting redfish services...");
-		resourceProvider.resourceProvider(); //初始化json2resource映射关系
+		//初始化json2resource映射关系
+		resourceProvider.resourceProvider(); 
 		List<OdataTypeMatcher> matchers = ResourceResolver.MATCHERS;
 		logger.info("The json2resource OData matchers size is " + matchers.size());
 	}
-
 }
