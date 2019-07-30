@@ -21,14 +21,24 @@ import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKN
 import static com.fasterxml.jackson.databind.PropertyNamingStrategy.UPPER_CAMEL_CASE;
 
 import java.net.URI;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.X509Certificate;
 
 import javax.annotation.PostConstruct;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import org.apache.http.client.config.RequestConfig;
+import org.apache.http.config.Registry;
+import org.apache.http.config.RegistryBuilder;
+import org.apache.http.conn.socket.ConnectionSocketFactory;
+import org.apache.http.conn.socket.PlainConnectionSocketFactory;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -37,29 +47,20 @@ import com.inspur.redfish.south.redfish.RedfishClient;
 import com.inspur.redfish.south.redfish.SocketErrorAwareHttpClient;
 
 
-@Component
 public class WebClientBuilder {
     private ObjectMapper objMapper = initMapper();
-//    private final ResteasyJackson2Provider jackson2Provider = initializeProvider();
 
-    @Autowired
-    private PoolingHttpClientConnectionManager httpClientConnectionManager;
-    @Autowired
-    private  RequestConfig.Builder cfgBuilder;
+    private PoolingHttpClientConnectionManager httpClientConnectionManager = getHttpClientConnectionManager();
+    
+    private  RequestConfig.Builder cfgBuilder = RequestConfig.custom();
 
     public Builder newInstance(URI baseUri) {
         return new Builder(baseUri);
     }
-    private ConnectionParameters connectionParameters;
+	//TODO 这里应该从配置文件里读取,现在简单设置一下
+    private ConnectionParameters connectionParameters = new ConnectionParameters(5, 5, 200, 20);
     
-    @PostConstruct
-    public void init() {
-//    	 this.connectionParameters = configHolder.get(ServiceConnectionConfig.class).getConnectionConfiguration().getConnectionParameters();
-    	//TODO 这里应该从配置文件里读取,现在简单设置一下
-    	connectionParameters = new ConnectionParameters(5, 5, 200, 20);
-    	
-    }
-	  private BaseHttpClient getBaseClient() {
+    private BaseHttpClient getBaseClient() {
 		  httpClientConnectionManager.setMaxTotal(connectionParameters.getConnectionPoolSize());
 		  httpClientConnectionManager.setDefaultMaxPerRoute(connectionParameters.getMaxPooledPerRoute());
 	      HttpClientBuilder httpClientBuilder = HttpClientBuilder.create();
@@ -117,5 +118,47 @@ public class WebClientBuilder {
             }
             return webClient;
         }
+    }
+    
+    private PoolingHttpClientConnectionManager getHttpClientConnectionManager(){
+        //SSLContext相关配置
+        SSLContext context = null;
+		try {
+			context = SSLContext.getInstance("TLSv1.2");
+			context.init(null, getTrustManagersWhichTrustAllIssuers(), null);
+		} catch (NoSuchAlgorithmException | KeyManagementException e) {
+            throw new RuntimeException("Keystore has not been initialized", e);
+		}
+        Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder
+                .<ConnectionSocketFactory> create()
+                .register("http", PlainConnectionSocketFactory.INSTANCE)
+                .register("https", new SSLConnectionSocketFactory(context, NoopHostnameVerifier.INSTANCE))
+                .build();
+        
+        PoolingHttpClientConnectionManager httpClientConnectionManager = new PoolingHttpClientConnectionManager(socketFactoryRegistry);
+        return httpClientConnectionManager;
+    }
+    
+    /**
+	 * 忽略所有对server的认证.
+	 * @return
+	 */
+    public TrustManager[] getTrustManagersWhichTrustAllIssuers() {
+        return new TrustManager[]{
+            new X509TrustManager() {
+                @Override
+                public X509Certificate[] getAcceptedIssuers() {
+                    return new X509Certificate[0];
+                }
+
+                @Override
+                public void checkClientTrusted(X509Certificate[] certs, String authType) {
+                }
+
+                @Override
+                public void checkServerTrusted(X509Certificate[] certs, String authType) {
+                }
+            }
+        };
     }
 }

@@ -1,13 +1,14 @@
 package com.inspur.redfish;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import com.inspur.redfish.north.controller.RedfishController;
 
-@SpringBootApplication
 public class InspurRedfishApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(InspurRedfishApplication.class, args);
+		RedfishController c = new RedfishController();
+		c.fetchRedfishService();
 	}
+	
+	
 
 }

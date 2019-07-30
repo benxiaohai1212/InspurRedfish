@@ -16,16 +16,11 @@
 
 package com.inspur.redfish.discovery.restgraph;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.inspur.redfish.common.sychronization.CancelableChecker;
 
 
-@Component
 public class RestGraphBuilderFactory {
-	@Autowired
-    private RestGraphBuilder restGraphBuilder;
+    private RestGraphBuilder restGraphBuilder = new RestGraphBuilderImpl();
 
     public RestGraphBuilder createWithCancelableChecker(CancelableChecker cancelableChecker) {
         restGraphBuilder.setCancelableChecker(cancelableChecker);

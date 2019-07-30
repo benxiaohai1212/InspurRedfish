@@ -18,17 +18,10 @@ package com.inspur.redfish.south.reader;
 
 import java.net.URI;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.inspur.redfish.http.WebClientBuilder;
 
-//@Dependent
-@Component
 public class ExternalServiceReaderFactory {
-//    @Inject
-	@Autowired
-    private WebClientBuilder webClientBuilder;
+    private WebClientBuilder webClientBuilder = new WebClientBuilder();
 
     public ExternalServiceReader createExternalServiceReaderWithCacheAndRetries(URI baseUri) {
         return new ExternalServiceReader(webClientBuilder.newInstance(baseUri)

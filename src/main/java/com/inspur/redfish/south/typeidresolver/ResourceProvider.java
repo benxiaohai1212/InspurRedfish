@@ -26,7 +26,6 @@ import java.util.function.Predicate;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 import com.inspur.redfish.south.resources.ExternalServiceResource;
 import com.inspur.redfish.south.resources.MembersListResource;
@@ -37,30 +36,28 @@ import com.inspur.redfish.utils.ClassUtil;
 
 //@Singleton
 //@Startup
-@Component("ResourceProvider")
 public class ResourceProvider {
 	private static final Logger logger = LoggerFactory.getLogger(ResourceProvider.class);
 
-//    @PostConstruct
-    public void resourceProvider() {
+    public static void resourceProvider() {
         logger.debug("Registering supported OData types...");
         registerKnownOdataTypes(ExternalServiceResource.class);
         registerKnownOdataTypes(OemVendor.class);
         registerKnownIncorrectOdataTypes();
     }
 
-    private void registerKnownOdataTypes(Class<?> clazz) {
+    private static void registerKnownOdataTypes(Class<?> clazz) {
 //        stream(getSubclasses(clazz).spliterator(), false)
     	 stream(ClassUtil.getAllClassByParent(clazz).spliterator(), false)
             .filter(byConcreteClass())
             .forEach(ResourceResolver::registerResource);
     }
 
-    private Predicate<Class<?>> byConcreteClass() {
+    private static Predicate<Class<?>> byConcreteClass() {
         return clazz -> !isAbstract(clazz.getModifiers());
     }
 
-    private void registerKnownIncorrectOdataTypes() {
+    private static void registerKnownIncorrectOdataTypes() {
         register(odataTypePatternMatcher(".*Processor.+Processor", ProcessorResource.class));
         register(simpleOdataTypeMatcher("#Managers.1.0.0.Manager", ManagerResource.class));
         register(simpleOdataTypeMatcher("#Processors.1.0.0.ProcessorsCollection", MembersListResource.class));

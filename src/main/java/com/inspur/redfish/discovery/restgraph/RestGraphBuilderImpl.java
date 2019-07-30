@@ -18,7 +18,6 @@ package com.inspur.redfish.discovery.restgraph;
 
 import static java.util.stream.Collectors.toSet;
 import static java.util.stream.StreamSupport.stream;
-import static javax.transaction.Transactional.TxType.MANDATORY;
 
 import java.net.URI;
 import java.util.ArrayDeque;
@@ -27,11 +26,6 @@ import java.util.HashSet;
 import java.util.Queue;
 import java.util.Set;
 
-import javax.transaction.Transactional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.inspur.redfish.common.sychronization.CancelableChecker;
 import com.inspur.redfish.common.utils.Contracts;
 import com.inspur.redfish.http.WebClientRequestException;
@@ -39,11 +33,8 @@ import com.inspur.redfish.south.reader.ExternalServiceReader;
 import com.inspur.redfish.south.resources.ExternalServiceResource;
 import com.inspur.redfish.south.resources.redfish.ServiceRootResource;
 
-//@Dependent
-@Component
 class RestGraphBuilderImpl implements RestGraphBuilder {
-    @Autowired
-    private ResourceLinkExtractor extractor;
+    private ResourceLinkExtractor extractor = new ResourceLinkExtractor();
 
     private CancelableChecker cancelableChecker;
     @Override
@@ -53,7 +44,7 @@ class RestGraphBuilderImpl implements RestGraphBuilder {
 
     @Override
 //    @TimeMeasured(tag = "[Discovery]")
-    @Transactional(MANDATORY)
+//    @Transactional(MANDATORY)
     public RestGraph build(ExternalServiceReader client) throws WebClientRequestException {
         ServiceRootResource serviceRoot = client.getServiceRoot();
         Contracts.requires(serviceRoot.getUuid() != null, "Service being discovered must have UUID assigned.");

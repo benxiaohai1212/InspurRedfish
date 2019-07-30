@@ -42,10 +42,15 @@ import com.inspur.redfish.http.OdataTypes;
 public final class ResourceResolver extends TypeIdResolverBase {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ResourceResolver.class);
-    //TODO 出于调试的目的,把其修饰为public了
-    public static final List<OdataTypeMatcher> MATCHERS = synchronizedList(new ArrayList<>());
+    private static final List<OdataTypeMatcher> MATCHERS = synchronizedList(new ArrayList<>());
     private JavaType baseType;
-
+    
+    //初始化json2resource映射关系
+    static {
+    	ResourceProvider.resourceProvider();
+    	LOGGER.info("The json2resource OData matchers size is " + MATCHERS.size());
+    }
+    
     private static void registerResource(Class<?> clazz, String odataType) {
         register(odataTypePatternMatcher(odataType, clazz));
     }

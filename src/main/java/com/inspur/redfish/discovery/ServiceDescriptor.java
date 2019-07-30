@@ -16,35 +16,23 @@
 
 package com.inspur.redfish.discovery;
 
-//import static com.intel.podm.client.WebClientExceptionUtils.tryGetUnderlyingRedirectionException;
-import static org.apache.commons.lang3.StringUtils.stripEnd;
-
 import java.net.URI;
-import java.util.Objects;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import com.inspur.redfish.common.types.ServiceType;
 import com.inspur.redfish.common.types.discovery.ServiceEndpoint;
 import com.inspur.redfish.http.WebClient;
 import com.inspur.redfish.http.WebClientBuilder;
 import com.inspur.redfish.http.WebClientRequestException;
-import com.inspur.redfish.south.redfish.response.UnexpectedRedirectionException;
 import com.inspur.redfish.south.resources.redfish.ServiceRootResource;
 
 /**
  * Service Detection implementation based on obtaining UUID of service
  * being detected at given URI using REST client.
  */
-//@ApplicationScoped
-//@SuppressWarnings({"checkstyle:ClassFanOutComplexity"})
-@Component
 public class ServiceDescriptor {
     private static final ServiceType UNDEFINED_SERVICE_TYPE = null;
 
-    @Autowired
-    private WebClientBuilder webClientBuilder;
+    private WebClientBuilder webClientBuilder = new WebClientBuilder();
 
 
 

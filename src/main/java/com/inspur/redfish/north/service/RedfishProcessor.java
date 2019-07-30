@@ -4,10 +4,7 @@ import static java.lang.String.format;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
-import com.inspur.redfish.common.sychronization.TaskCanceledException;
 import com.inspur.redfish.common.types.discovery.ServiceEndpoint;
 import com.inspur.redfish.discovery.ServiceDescriptor;
 import com.inspur.redfish.discovery.UnrecognizedServiceTypeException;
@@ -22,14 +19,10 @@ import com.inspur.redfish.south.reader.ExternalServiceReaderFactory;
  * @author 86135
  *
  */
-@Component
 public class RedfishProcessor {
-	@Autowired
-    private ServiceDescriptor serviceDescriptor;
-	@Autowired
-	RestGraphBuilderFactory restGraphBuilderFactory;
-	@Autowired
-	private ExternalServiceReaderFactory readerFactory;
+    private ServiceDescriptor serviceDescriptor = new ServiceDescriptor();
+	RestGraphBuilderFactory restGraphBuilderFactory = new RestGraphBuilderFactory();
+	private ExternalServiceReaderFactory readerFactory = new ExternalServiceReaderFactory();
 	
 	private static final Logger logger = LoggerFactory.getLogger(RedfishProcessor.class);
 	
@@ -50,8 +43,6 @@ public class RedfishProcessor {
 	            logger.info("Polling data from {} finished", candidate);
 	        } catch (WebClientRequestException e) {
 	            logger.warn(format("Unable to process data from %s service", candidate), e);
-	        } catch (TaskCanceledException e) {
-	            logger.info("Discovery was canceled for {} due to: {}", candidate, e.getMessage());
 	        } catch (RuntimeException e) {
 	            logger.error("Error while polling data from " + candidate, e);
 	        }
@@ -63,7 +54,5 @@ public class RedfishProcessor {
 //      if (discoveryConfig.get(DiscoveryConfig.class).isDiscoveryCancelable()) {
 //          throwWithMessageIfEligibleForCancellation("Discovery was canceled.");
 //      }
-  	//TODO discovery是否可以取消
-//  	throwWithMessageIfEligibleForCancellation("Discovery was canceled.");
   }
 }

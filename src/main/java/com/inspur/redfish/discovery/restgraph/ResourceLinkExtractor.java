@@ -25,7 +25,6 @@ import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 import com.inspur.redfish.http.WebClientExceptionUtils;
 import com.inspur.redfish.http.WebClientRequestException;
@@ -33,8 +32,6 @@ import com.inspur.redfish.south.reader.ResourceLinks;
 import com.inspur.redfish.south.reader.ResourceSupplier;
 import com.inspur.redfish.south.resources.ExternalServiceResource;
 
-//@Dependent
-@Component
 //这个类用到了@linkName注解，获取相关的json link
 public class ResourceLinkExtractor {
 	private static final Logger logger = LoggerFactory.getLogger(ResourceLinkExtractor.class);
